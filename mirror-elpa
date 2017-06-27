@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+set -ue
+
+# defaults
+mirror_path=""
+mirror_repo_remote_name="origin"
+mirror_repo_branch_name="master"
+elpa_clone_path="$HOME/.cache/elpa-clone"
+elpa_clone_url="https://github.com/dochang/elpa-clone.git"
+email=""
+name=""
+access_token=""
+
+PATH=/usr/local/bin:/usr/bin:/bin
+
+function git_config_hook {
+    log "Git config hook"
+}
+
+# load configs
+config_file=$1
+[ -f "$config_file" ] && source "$config_file"
+
+# setup url
+MIRROR_REPO="https://${owner}:${access_token}@github.com/${owner}/${repo}.git"
+
+function log {
+  echo "[$(date '+%d/%m/%y %H:%M:%S')]" "$@"
+}
+
+function clone {
+  log "Updating mirror for $2 ($1)"
+  emacs -l "$elpa_clone_path/elpa-clone.el" -nw --batch --eval="(elpa-clone \"$1\" \"$mirror_path/$2\")"
+}
+
+if [[ "$mirror_path" = "" ]]; then
+  mirror_path="$(mktemp -d)"
+fi
+
+trap '[ "$?" -eq 0 ] || log Error! Could not update elpa mirrors!' EXIT
+
+log "Start updating elpa mirrors"
+log "mirror_path: $mirror_path"
+log "MIRROR_REPO: $MIRROR_REPO"
+log "elpa_clone_path: $elpa_clone_path"
+log "PATH: $PATH"
+
+if [[ ! -d $elpa_clone_path ]]; then
+  log "elpa-clone tool is missing, installing it..."
+  git clone --depth 1 "$elpa_clone_url" "$elpa_clone_path"
+else
+  log "updating elpa-clone"
+  cd "$elpa_clone_path"
+  git fetch origin
+  git reset --hard origin/master
+fi
+
+if [[ ! -d "$mirror_path" ]]; then
+  log "cloning mirror repository"
+  git clone --depth 1 "$MIRROR_REPO" "$mirror_path"
+fi
+
+cd "$mirror_path"
+
+# if [ -d .git ] || git rev-parse --git-dir > /dev/null 2>&1; then
+#   log "updating mirror repository"
+#   git fetch "$mirror_repo_remote_name"
+#   git reset --hard "${mirror_repo_remote_name}/${mirror_repo_branch_name}"
+# fi
+
+clone "http://orgmode.org/elpa/" "org"
+clone "https://elpa.gnu.org/packages/" "gnu"
+clone "rsync://melpa.org/packages/" "melpa"
+clone "rsync://stable.melpa.org/packages/" "stable-melpa"
+
+if [ -d .git ] || git rev-parse --git-dir > /dev/null 2>&1; then
+  log "Configure repository"
+  git config user.name "$name"
+  git config user.email "$email"
+  git_config_hook
+  git add --all
+  log "Committing and pushing all changes to mirror repository"
+  git commit -m "snapshot $(date '+%d/%m/%y %H:%M:%S')"
+  if [[ $"MIRROR_REPO" != "" ]]; then
+    git push "$MIRROR_REPO" "$mirror_repo_branch_name"
+  fi
+fi
+
+log "Done updating elpa mirrors"

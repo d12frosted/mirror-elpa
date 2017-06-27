@@ -1,0 +1,53 @@
+* =mirror-elpa=
+
+(To) Mirror Emacs Lisp package archives. Used to create and maintain mirrors
+under Git repository.
+
+Note that currently only GitHub is supported out of box as a remote for the
+mirror. Though you can use =mirror-elpa= to maintain local mirror or mirror on
+any other Git hosting.
+
+** Prerequisites
+
+The following software must be installed on your system:
+
+- [[https://stedolan.github.io/jq/][jq]]
+- [[http://git-scm.org/][Git]]
+- [[http://curl.haxx.se/][cURL]]
+- [[https://www.gnu.org/software/emacs/][Emacs]]
+
+** Usage
+
+#+BEGIN_SRC bash
+$ git clone https://github.com/d12frosted/mirror-elpa
+$ cd mirror-elpa
+$ ./configure
+$ make install
+#+END_SRC
+
+You can also specify how often to sync mirror when running make install
+(defaults to every 4 hours) and location to resulting configuration file
+(defaults to =$XDG_CONFIG_HOME/mirror-elpa.sh=:
+
+#+BEGIN_SRC bash
+$ make install SCHEDULE="0 0 * * *" CONFIG_FILE="~/mirror-elpa.sh"
+#+END_SRC
+
+=SCHEDULE= can be set to any valid [[https://en.wikipedia.org/wiki/Cron#CRON_expression][CRON expression]].
+
+Resulting configuration file can be used for more grained control over
+=mirror-elpa= behaviour.
+
+- Set value of =mirror_path= to avoid using temporary folder for mirror.
+- Set value of =mirror_repo_branch_name= to change branch name (default is
+  =master=).
+- Define =git_config_hook= function that is called before changes to repository
+  are committed. This is a good place to configure Git.
+- Set value of =mirror_repo= if you wish to use local mirror or mirror hosted
+  somewhere else rather than on GitHub. Empty string means local mirror (script
+  doesn't push).
+
+** Credits
+
+- [[https://github.com/dochang][Desmond O. Chang]], thanks for [[https://github.com/dochang/elpa-clone][elpa-clone]].
+- [[https://github.com/ninrod][Filipe Silva]], thanks for keeping this project alive.
