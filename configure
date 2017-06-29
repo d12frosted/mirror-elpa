@@ -43,6 +43,7 @@ repo=
 name=
 email=
 message=
+access_login=
 access_token=
 
 [ -f "$config_file" ] && source "$config_file"
@@ -76,12 +77,18 @@ done
 
 owner="$i_owner"
 repo="$i_repo"
+access_login="$owner"
 
 while :; do
     echo "mirror-elpa needs to be authorized to access $i_owner/$i_repo."
 		echo "Please create a token with 'repo' permissions here:"
 		echo "https://github.com/settings/tokens/new"
 		echo "Alternatively, hit return without entering anything to have mirror-elpa create one for you."
+
+    printf "Repo access login: ($access_login) "
+    read i_access_login
+    [ -n "$i_access_login" ] && access_login="$i_access_login"
+
 		printf "GitHub API token: "
 		read -r i_access_token
 		[ -n "$i_access_token" ] && break
@@ -144,6 +151,7 @@ printf "repo=%q\n"         "$repo"         >> "$config_file"
 printf "name=%q\n"         "$name"         >> "$config_file"
 printf "email=%q\n"        "$email"        >> "$config_file"
 printf "message=%q\n"      "$message"      >> "$config_file"
+printf "access_login=%q\n" "$access_token" >> "$config_file"
 printf "access_token=%q\n" "$access_token" >> "$config_file"
 
 echo "Successfully wrote configuration to $config_file"

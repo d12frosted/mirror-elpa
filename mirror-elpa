@@ -10,6 +10,7 @@ elpa_clone_path="$HOME/.cache/elpa-clone"
 elpa_clone_url="https://github.com/dochang/elpa-clone.git"
 email=""
 name=""
+access_login=""
 access_token=""
 
 PATH=/usr/local/bin:/usr/bin:/bin
@@ -23,7 +24,7 @@ config_file=$1
 [ -f "$config_file" ] && source "$config_file"
 
 # setup url
-MIRROR_REPO="https://${owner}:${access_token}@github.com/${owner}/${repo}.git"
+MIRROR_REPO="https://${access_login}:${access_token}@github.com/${owner}/${repo}.git"
 
 function log {
   echo "[$(date '+%d/%m/%y %H:%M:%S')]" "$@"
