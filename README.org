@@ -51,3 +51,5 @@ Resulting configuration file can be used for more grained control over
 
 - [[https://github.com/dochang][Desmond O. Chang]], thanks for [[https://github.com/dochang/elpa-clone][elpa-clone]].
 - [[https://github.com/ninrod][Filipe Silva]], thanks for keeping this project alive.
+- [[https://github.com/alyssais][Alyssa Ross]], thanks for [[https://github.com/alyssais/humans][humans]] project that inspired me for improving my
+  existing scripts into this project.
