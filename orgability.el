@@ -10,7 +10,7 @@
 ;; Homepage: https://github.com/d12frosted/orgability
 
 ;; Package-Version: 0.0.1
-;; Package-Requires: ((org-cliplink "0.2") (org-brain "0.5") (org-brain "1136"))
+;; Package-Requires: ((org-mode "9.1.0") (org-cliplink "0.2") (org-board "1136"))
 
 ;; This file is not part of GNU Emacs.
 ;;; License: GPLv3
@@ -21,9 +21,10 @@
 ;;; Code:
 ;;
 
-(require 'org-brain)
+(require 'orgability-utils)
+(require 'orgability-brain)
 (require 'org-cliplink)
-(require 'org-cliplink)
+(require 'org-board)
 
 (defvar orgability-file nil
   "File for storing reading list.")
@@ -93,62 +94,57 @@
         (mapc (lambda (p) (org-set-property (car p) (cdr p))) props)
         (save-buffer)))))
 
-(defun orgability-add-relation (link title)
-  "Add relation for the entry at point."
-  (orgability-with-entry
-   (orgability-goto-relations-block)
-   (newline-and-indent)
-   (insert (concat "- " (org-make-link-string link title)))))
+;;;###autoload
+(defun orgability-add-relation ()
+  "Add two-way relation with other entry."
+  (interactive)
+  (let* ((entry (orgability-brain-choose-entry))
+         (link (orgability-brain-get-link entry)))
+    (unless (orgability--has-relation link)
+      (orgability--add-relation (orgability-brain-get-link entry)
+                                (org-brain-title entry))
+      (orgability-brain-add-relation (org-id-get-create)
+                                     entry))))
 
+;;;###autoload
 (defun orgability-delete-relation ()
   "Select and delete relation for the entry at point."
   (interactive)
-  (let* (id (org-id-get-create)
-            (relations (orgability-list-relations))
-            (target (completing-read
-                     "Relation: "
-                     (mapcar #'cdr
-                             (orgability-list-relations))))
-            (link (car (find-if (lambda (x)
-                                  (string-equal target
-                                                (cdr x)))
-                                relations))))
+  (let* ((id (org-id-get-create))
+         (relations (orgability-list-relations))
+         (target (completing-read
+                  "Relation: "
+                  (mapcar #'cdr
+                          (orgability-list-relations))))
+         (link (car (find-if (lambda (x)
+                               (string-equal target
+                                             (cdr x)))
+                             relations))))
     (orgability-with-entry
      (orgability-goto-relations-block)
-     (while (not (looking-at ":END:"))
+     (orgability-remove-till (concat "^.*" link ".*$") ":END:"))
+    (orgability-brain-delete-relation id
+                                      (orgability-unwrap-link link))))
+
+(defun orgability--has-relation (link)
+  "Returns non-nil if entry at point has a relation with LINK."
+  (let ((result))
+    (orgability-with-entry
+     (orgability-goto-relations-block)
+     (while (not (looking-at-p ":END:"))
        (forward-line 1)
        (beginning-of-line)
-       (when (looking-at (concat "^.*" link ".*$"))
-         (kill-whole-line))))
+       (when (looking-at-p (concat "^.*" link ".*$"))
+         (setq result t))))
+    result))
 
-    (when-let* ((is-id (string-prefix-p "id:" link))
-                (brain-id (string-remove-prefix "id:" link))
-                (entry (org-brain-entry-from-id brain-id))
-                (is-headline (not (org-brain-filep entry))))
-      (org-with-point-at (org-brain-entry-marker entry)
-        (goto-char (cdr (org-get-property-block)))
-        (forward-line 1)
-        (when (looking-at org-brain-resources-start-re)
-          (while (not (looking-at ":END:"))
-            (forward-line 1)
-            (beginning-of-line)
-            (when (looking-at (concat "^.*" id ".*$"))
-              (kill-whole-line))))))
-
-    (when-let* ((is-file (string-prefix-p "file:" link))
-                (file (string-remove-prefix "file:" link))
-                (entry (org-brain-path-entry-name file))
-                (is-file (org-brain-filep entry)))
-      (with-current-buffer (find-file-noselect (org-brain-entry-path entry))
-        (goto-char (point-min))
-        (or (re-search-forward (concat "^\\(" org-outline-regexp "\\)") nil t)
-            (goto-char (point-max)))
-        (when (re-search-backward org-brain-resources-start-re nil t)
-          (while (not (looking-at ":END:"))
-            (forward-line 1)
-            (beginning-of-line)
-            (when (looking-at (concat "^.*" id ".*$"))
-              (kill-whole-line))))))))
+(defun orgability--add-relation (link title)
+  "Add relation for the entry at point."
+  (unless (orgability--has-relation link)
+    (orgability-with-entry
+     (orgability-goto-relations-block)
+     (newline-and-indent)
+     (insert (concat "- " (org-make-link-string link title))))))
 
 (defun orgability-goto-relations-block ()
   "Move the point inside of relations block."
@@ -185,34 +181,6 @@
                         (replace-regexp-in-string "[ \t\n\r]+" " " desc))))
               nil nil t))))
      links)))
-
-;;;###autoload
-(defun orgability-add-brain-relation ()
-  "Add two-way relation with brain entry."
-  (interactive)
-  (let ((entry (org-brain-choose-entry
-                "Entry: " (append (org-brain-files t)
-                                  (org-brain-headline-entries)))))
-    (orgability-add-relation (orgability-get-brain-link entry)
-                             (org-brain-title entry))
-    (orgability-with-entry
-     (org-brain-add-resource (concat "id:" (org-id-get-create))
-                             (org-entry-get nil "ITEM")
-                             nil
-                             entry))))
-
-(defun orgability-get-brain-link (brain-entry)
-  "Get link to BRAIN-ENTRY."
-  (if (org-brain-filep brain-entry)
-      (concat "file://" (org-brain-entry-path brain-entry))
-    (concat "id:" (org-brain-entry-identifier brain-entry))))
-
-(defmacro orgability-with-entry (&rest body)
-  "Move to buffer and point of current entry for the duration of BODY."
-  `(cond ((eq major-mode 'org-mode)
-          (org-with-point-at (point) ,@body))
-         ((eq major-mode 'org-agenda-mode)
-          (org-agenda-with-point-at-orig-entry nil ,@body))))
 
 (provide 'orgability)
 
