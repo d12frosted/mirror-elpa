@@ -38,6 +38,9 @@
 (defvar orgability-active-timestamp nil
   "If non-nil, ADDED timestamp is active.")
 
+(defvar orgability-auto-archive t
+  "If non-nil, entry is automatically archived.")
+
 (defconst orgability-title "Reading list"
   "Title of `orgability-file'.")
 
@@ -92,7 +95,9 @@
                                    (format-time-string "%Y-%02m-%02d")
                                    (if orgability-active-timestamp ">" "]")))
         (mapc (lambda (p) (org-set-property (car p) (cdr p))) props)
-        (save-buffer)))))
+        (save-buffer)
+        (when orgability-auto-archive
+          (org-board-archive))))))
 
 ;;;###autoload
 (defun orgability-add-relation ()
