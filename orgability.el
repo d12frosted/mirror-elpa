@@ -41,6 +41,10 @@
 (defvar orgability-auto-archive t
   "If non-nil, entry is automatically archived.")
 
+(defvar orgability-extract-http-title-f
+  'org-cliplink-retrieve-title-synchronously
+  "Function to extract title from http URL.")
+
 (defconst orgability-title "Reading list"
   "Title of `orgability-file'.")
 
@@ -68,7 +72,7 @@
 (defun orgability-store-url (url)
   "Store an URL."
   (interactive "sUrl: ")
-  (let ((title (org-cliplink-retrieve-title-synchronously url)))
+  (let ((title (funcall orgability-extract-http-title-f url)))
     (orgability-add-entry title url)))
 
 (defun orgability-add-entry (title url &optional props)
