@@ -21,14 +21,14 @@
 ;;; Code:
 ;;
 
-(defmacro orgability-with-entry (&rest body)
+(defmacro orgability--with-entry (&rest body)
   "Move to buffer and point of current entry for the duration of BODY."
   `(cond ((eq major-mode 'org-mode)
           (org-with-point-at (point) ,@body))
          ((eq major-mode 'org-agenda-mode)
           (org-agenda-with-point-at-orig-entry nil ,@body))))
 
-(defun orgability-remove-till (itemr stopr)
+(defun orgability--remove-till (itemr stopr)
   "Remove lines matching ITEMR until STOPR is found."
   (while (not (looking-at stopr))
     (if (looking-at itemr)
@@ -36,13 +36,18 @@
       (forward-line 1)
       (beginning-of-line))))
 
-(defun orgability-unwrap-link (link)
+(defun orgability--unwrap-link (link)
   "Get the link without the type."
-  (funcall (compose (apply-partially #'string-remove-prefix "id:")
-                  (apply-partially #'string-remove-prefix "file:"))
+  (funcall (orgability--compose
+            (apply-partially #'string-remove-prefix "id:")
+            (apply-partially #'string-remove-prefix "file:"))
            link))
 
-(defun compose (&rest funs)
+(defun orgability--lookup-key (key-map function)
+  "Returns key binding for a FUNCTION in a KEY-MAP."
+  (string (car (rassoc function (cdr key-map)))))
+
+(defun orgability--compose (&rest funs)
   "Return function composed of FUNS."
   (lexical-let ((lex-funs funs))
     (lambda (&rest args)

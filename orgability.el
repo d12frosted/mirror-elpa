@@ -21,10 +21,11 @@
 ;;; Code:
 ;;
 
-(require 'orgability-utils)
-(require 'orgability-brain)
 (require 'org-cliplink)
 (require 'org-board)
+
+(require 'orgability-utils)
+(require 'orgability-brain)
 
 (defvar orgability-file nil
   "File for storing reading list.")
@@ -41,15 +42,15 @@
 (defvar orgability-auto-archive t
   "If non-nil, entry is automatically archived.")
 
-(defvar orgability-extract-http-title-f
-  'org-cliplink-retrieve-title-synchronously
-  "Function to extract title from http URL.")
-
 (defconst orgability-title "Reading list"
   "Title of `orgability-file'.")
 
 (defconst orgability-category "reading-list"
   "Category of `orgability-file' entries.")
+
+(defvar orgability-extract-http-title-f
+  'org-cliplink-retrieve-title-synchronously
+  "Function to extract title from http URL.")
 
 (defconst orgability-relations-start-re "^[ \t]*:RELATIONS:[ \t]*$"
   "Regular expression matching the first line of a relations drawer.")
@@ -129,16 +130,16 @@
                                (string-equal target
                                              (cdr x)))
                              relations))))
-    (orgability-with-entry
+    (orgability--with-entry
      (orgability-goto-relations-block)
-     (orgability-remove-till (concat "^.*" link ".*$") ":END:"))
+     (orgability--remove-till (concat "^.*" link ".*$") ":END:"))
     (orgability-brain-delete-relation id
-                                      (orgability-unwrap-link link))))
+                                      (orgability--unwrap-link link))))
 
 (defun orgability--has-relation (link)
   "Returns non-nil if entry at point has a relation with LINK."
   (let ((result))
-    (orgability-with-entry
+    (orgability--with-entry
      (orgability-goto-relations-block)
      (while (not (looking-at-p ":END:"))
        (forward-line 1)
@@ -150,7 +151,7 @@
 (defun orgability--add-relation (link title)
   "Add relation for the entry at point."
   (unless (orgability--has-relation link)
-    (orgability-with-entry
+    (orgability--with-entry
      (orgability-goto-relations-block)
      (newline-and-indent)
      (insert (concat "- " (org-make-link-string link title))))))
@@ -173,7 +174,7 @@
 (defun orgability-list-relations ()
   "Get the relations list of entry at point."
   (interactive)
-  (orgability-with-entry
+  (orgability--with-entry
    (orgability-goto-relations-block)
    (forward-line 1)
    (beginning-of-line)
