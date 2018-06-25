@@ -54,6 +54,9 @@
 (defconst orgability-category "reading-list"
   "Category of `orgability-file' entries.")
 
+(defconst orgability-file-tags "reading"
+  "Tags of `orgability-file' entries.")
+
 (defvar orgability-extract-http-title-f
   'org-cliplink-retrieve-title-synchronously
   "Function to extract title from http URL.")
@@ -66,7 +69,8 @@
   (unless (file-exists-p file)
     (with-temp-file file
       (insert "#+TITLE: " orgability-title "\n"
-              "#+CATEGORY: " orgability-category "\n\n"))))
+              "#+CATEGORY: " orgability-category "\n"
+              "#+FILETAGS: " orgability-file-tags "\n\n"))))
 
 ;;;###autoload
 (defun orgability-open ()
