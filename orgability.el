@@ -45,6 +45,9 @@
 (defvar orgability-use-relative-archive-url t
   "If non-nil, use relative links to archive.")
 
+(defvar orgability-auto-agenda-redo t
+  "If non-nil, redo agenda on clip.")
+
 (defconst orgability-title "Reading list"
   "Title of `orgability-file'.")
 
@@ -114,7 +117,10 @@
                (replace-regexp-in-string
                 (file-name-directory (buffer-file-name))
                 ""
-                link)))))))))
+                link))))))
+      (when org-agenda-buffer
+        (with-current-buffer org-agenda-buffer
+          (org-agenda-redo))))))
 
 ;;;###autoload
 (defun orgability-add-relation ()
