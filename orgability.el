@@ -27,7 +27,7 @@
 (require 'orgability-utils)
 (require 'orgability-brain)
 
-(defvar orgability-file nil
+(defvar orgability-file (concat user-home-directory "orgability.org")
   "File for storing reading list.")
 
 (defvar orgability-add-to-top t
