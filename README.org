@@ -1,0 +1,77 @@
+* =orgability=
+Orgability is a reading list manager with offline access support. Orgability
+lets you to easily create relations between reading list entries and =org-brain=
+entries.
+
+** Installation
+This package requires Emacs 25.1 or higher.
+
+*** MELPA
+This package is not yet available on MELPA.
+
+*** Manual
+Install =org-mode=, =org-cliplink=, =org-board= and =org-brain= and then require
+this package in your =init.el= file:
+
+#+BEGIN_SRC emacs-lisp
+  (require 'orgability)
+#+END_SRC
+
+** Usage
+*** Commands
+- =orgability-clip=: Stores an URL from the clipboard to the =orgability-file=.
+  - The title is fetched using =org-cliplink=.
+  - When =orgability-auto-archive= is non-nil the URL is archived using
+    =org-board= for an offline access.
+- =orgability-store-url=: The same as =orgability-clip=, but asks for an URL.
+- =orgability-open=: Opens archive using =org-board= in the
+  =org-board-default-browser=.
+- =orgability-add-relation=: Asks for a =org-brain= entry and creates a two-way
+  relation between reading list entry at the point and selected =org-brain=
+  entry.
+- =orgability-delete-relation=: Removes relation between =org-brain= entry and
+  reading list entry in a two-way fashion. That's why you should not manually
+  remove relations from =orgability-file=.
+
+*** Viewing reading list
+Currently, =orgability= doesn't expose any functionality to nicely view all your
+reading list (with relations). It is planned for future versions.
+
+Meanwhile, you can setup =org-agenda= for this.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-custom-commands
+        `(("r" "Reading List" tags "READING"
+           ((org-agenda-overriding-header "Reading List")))))
+#+END_SRC
+
+*** Configurations
+- =orgability-file=: File with reading list entries.
+- =orgability-add-to-top=: If non-nil, entries are added to the top of the
+  =orgability-file=.
+- =orgability-todo-keyword=: If non-nil, entries are added with a selected todo
+  keyword.
+- =orgability-active-timestamp=: If non-nil, ADDED timestamp is active and
+  inactive otherwise.
+- =orgability-auto-archive=: If non-nil, use =org-board= to archive reading list
+  for offline access when adding it.
+- =orgability-use-relative-archive-url=: If non-nil, use relative links to
+  archived reading list entry. Useful when using several computers with
+  different =$HOME= directories.
+- =orgability-auto-agenda-redo=: If non-nil, refresh =org-agenda= when adding
+  reading list entry.
+- =orgability-title=: Title for a new =orgability-file=.
+- =orgability-category=: Category for a new =orgability-file=.
+- =orgability-file-tags=: File tags for a new =orgability-file=.
+- =orgability-extract-http-title-f=: Function to extract title from http(s) URL.
+  By default it's =org-cliplink-retrieve-title-synchronously= from a
+  =org-cliplink= package. This variable allows you to choose your own
+  implementation.
+
+** Special thanks
+Special thanks to creators and maintainers of =org-mode=, =org-cliplink=,
+=org-brain= and =org-board=. And to all the Emacs community.
+
+** Contributing
+Don't hesitate to ask questions, to report bugs or suggest new features. And
+most importantly, PRs are welcome!

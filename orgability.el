@@ -1,4 +1,4 @@
-;;; orgability.el --- reading list manager in `org-mode'
+;;; orgability.el --- reading list manager with offline access support.
 
 ;; Copyright (c) 2018 Boris Buliga
 
@@ -9,7 +9,7 @@
 ;; Keywords: org-mode
 ;; Homepage: https://github.com/d12frosted/orgability
 
-;; Package-Version: 0.0.1
+;; Package-Version: 0.1.0
 ;; Package-Requires: ((org-mode "9.1.0") (org-cliplink "0.2") (org-board "1136"))
 
 ;; This file is not part of GNU Emacs.
@@ -17,6 +17,7 @@
 
 ;;; Commentary:
 ;;
+;; Please checkout home page.
 
 ;;; Code:
 ;;
@@ -34,7 +35,7 @@
   "If non-nil, entries are added to the top of the `orgability-file'.")
 
 (defvar orgability-todo-keyword "TODO"
-  "If non-nil, entries are added with a todo keyword.")
+  "If non-nil, entries are added with a selected todo keyword.")
 
 (defvar orgability-active-timestamp nil
   "If non-nil, ADDED timestamp is active.")
@@ -43,7 +44,10 @@
   "If non-nil, entry is automatically archived.")
 
 (defvar orgability-use-relative-archive-url t
-  "If non-nil, use relative links to archive.")
+  "If non-nil, use relative links to archive.
+
+Useful when using several computers with different $HOME
+directories.")
 
 (defvar orgability-auto-agenda-redo t
   "If non-nil, redo agenda on clip.")
@@ -135,7 +139,7 @@
 
 ;;;###autoload
 (defun orgability-add-relation ()
-  "Add two-way relation with other entry."
+  "Add two-way relation with `org-brain' entry."
   (interactive)
   (let* ((entry (orgability-brain-choose-entry))
          (link (orgability-brain-get-link entry)))
@@ -147,7 +151,10 @@
 
 ;;;###autoload
 (defun orgability-delete-relation ()
-  "Select and delete relation for the entry at point."
+  "Select and delete relation for the entry at point.
+
+It works in a two-way fashion, meaning that the relation to
+reading list entry is also removed."
   (interactive)
   (let* ((id (org-id-get-create))
          (relations (orgability-list-relations))
