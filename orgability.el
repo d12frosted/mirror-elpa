@@ -42,6 +42,9 @@
 (defvar orgability-auto-archive t
   "If non-nil, entry is automatically archived.")
 
+(defvar orgability-use-relative-archive-url t
+  "If non-nil, use relative links to archive.")
+
 (defconst orgability-title "Reading list"
   "Title of `orgability-file'.")
 
@@ -78,7 +81,6 @@
 
 (defun orgability-add-entry (title url &optional props)
   "Add read entry with TITLE and URL and optional PROPS."
-  ;; (interactive "sTitle: \nsURL: ")
   (unless orgability-file
     (user-error "`orgability-file' is not set"))
   (orgability-create-file orgability-file)
@@ -102,7 +104,17 @@
         (mapc (lambda (p) (org-set-property (car p) (cdr p))) props)
         (save-buffer)
         (when orgability-auto-archive
-          (org-board-archive))))))
+          (org-board-archive)
+          (when orgability-use-relative-archive-url
+            (let ((link (car (last
+                              (org-entry-get-multivalued-property
+                               (point) "ARCHIVED_AT")))))
+              (org-set-property
+               "ARCHIVED_AT"
+               (replace-regexp-in-string
+                (file-name-directory (buffer-file-name))
+                ""
+                link)))))))))
 
 ;;;###autoload
 (defun orgability-add-relation ()
