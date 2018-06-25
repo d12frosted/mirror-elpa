@@ -69,6 +69,13 @@
               "#+CATEGORY: " orgability-category "\n\n"))))
 
 ;;;###autoload
+(defun orgability-open ()
+  "Open archived file for entry at point."
+  (interactive)
+  (orgability--with-entry
+   (call-interactively #'org-board-open)))
+
+;;;###autoload
 (defun orgability-clip ()
   "Store an URL from the clipboard."
   (interactive)
