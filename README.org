@@ -11,10 +11,11 @@ any other Git hosting.
 
 The following software must be installed on your system:
 
-- [[https://stedolan.github.io/jq/][jq]]
-- [[http://git-scm.org/][Git]]
-- [[http://curl.haxx.se/][cURL]]
-- [[https://www.gnu.org/software/emacs/][Emacs]]
+- [[https://stedolan.github.io/jq/][jq]] (configuration step)
+- [[http://curl.haxx.se/][cURL]] (configuration step)
+- [[http://git-scm.org/][Git]] (mirroring step)
+- [[https://www.gnu.org/software/emacs/][Emacs]] (mirroring step)
+- rsync (mirroring step)
 
 ** Usage
 
