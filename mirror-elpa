@@ -83,10 +83,14 @@ clone "rsync://stable.melpa.org/packages/" "stable-melpa"
     git config user.email "$email"
     git_config_hook
     git add --all
-    log "Committing and pushing all changes to mirror repository"
-    git commit -m "snapshot $(date '+%d/%m/%y %H:%M:%S')"
-    if [[ $"MIRROR_REPO" != "" ]]; then
-      git push "$MIRROR_REPO" "$mirror_repo_branch_name"
+    if git diff --exit-code; then
+      log "Nothing to commit"
+    else
+      log "Committing and pushing all changes to mirror repository"
+      git commit -m "snapshot $(date '+%d/%m/%y %H:%M:%S')"
+      if [[ $"MIRROR_REPO" != "" ]]; then
+        git push "$MIRROR_REPO" "$mirror_repo_branch_name"
+      fi
     fi
   fi
 )
