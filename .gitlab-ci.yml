@@ -4,9 +4,5 @@ before_script:
   - apt-get update && apt-get install -y rsync
 
 test:
-  cache:
-    paths:
-      - elpa-mirror
-      - elpa-clone
   script:
     - ./mirror-elpa .ci/github.config
