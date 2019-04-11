@@ -3,8 +3,20 @@ image: silex/emacs:master-dev
 before_script:
   - apt-get update && apt-get install -y rsync
 
-sync:
+stages:
+  - build
+  - github
+
+build:
+  stage: build
   script:
     - ./mirror-elpa .ci/github.config
+  only:
+    - master
+
+gihub:
+  stage: github
+  script:
+    - .ci/github_push
   only:
     - master
