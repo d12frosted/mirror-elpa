@@ -5,17 +5,15 @@ under Git repository.
 
 Note that currently only GitLab and GitHub are supported out of box as a remote
 for the mirror. Though you can use =mirror-elpa= to maintain local mirror or
-mirror on any other Git hosting.
+mirror on any other Git hosting. See ~Usage~ section for more information.
 
 ** Prerequisites
 
 The following software must be installed on your system:
 
-- [[https://stedolan.github.io/jq/][jq]] (configuration step)
-- [[http://curl.haxx.se/][cURL]] (configuration step)
-- [[http://git-scm.org/][Git]] (mirroring step)
-- [[https://www.gnu.org/software/emacs/][Emacs]] (mirroring step)
-- rsync (mirroring step)
+- Git
+- Emacs
+- rsync
 
 ** Usage
 
@@ -44,8 +42,8 @@ Resulting configuration file can be used for more grained control over
   =master=).
 - Define =git_config_hook= function that is called before changes to repository
   are committed. This is a good place to configure Git.
-- Set value of =mirror_repo= if you wish to use local mirror or mirror hosted
-  somewhere else rather than on GitHub. Empty string means local mirror (script
+- Set value of =mirror_url= if you wish to use local mirror or mirror hosted
+  somewhere else rather than on GitLab. Empty string means local mirror (script
   doesn't push).
 
 ** Credits
