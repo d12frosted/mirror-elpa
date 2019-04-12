@@ -83,7 +83,7 @@ clone "rsync://stable.melpa.org/packages/" "stable-melpa"
     git config user.email "$email"
     git_config_hook
     git add --all
-    if git diff --exit-code; then
+    if [ -z "$(git status --porcelain)" ]; then
       log "Nothing to commit"
     else
       log "Committing and pushing all changes to mirror repository"
