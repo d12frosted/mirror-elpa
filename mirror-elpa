@@ -4,7 +4,6 @@ set -ue
 
 # defaults
 mirror_path=""
-mirror_repo_remote_name="origin"
 mirror_repo_branch_name="master"
 elpa_clone_path="$HOME/.cache/elpa-clone"
 elpa_clone_url="https://github.com/dochang/elpa-clone.git"
@@ -62,12 +61,6 @@ if [[ ! -d "$mirror_path" ]]; then
   log "cloning mirror repository"
   git clone --depth 1 "$MIRROR_REPO" "$mirror_path"
 fi
-
-# if [ -d .git ] || git rev-parse --git-dir > /dev/null 2>&1; then
-#   log "updating mirror repository"
-#   git fetch "$mirror_repo_remote_name"
-#   git reset --hard "${mirror_repo_remote_name}/${mirror_repo_branch_name}"
-# fi
 
 clone "http://orgmode.org/elpa/" "org"
 clone "rsync://elpa.gnu.org/packages/" "gnu"
