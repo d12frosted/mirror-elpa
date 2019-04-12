@@ -4,13 +4,17 @@ set -ue
 
 # defaults
 mirror_path=""
+mirror_host="gitlab.com"
+mirror_owner=""
+mirror_repo=""
 mirror_repo_branch_name="master"
-elpa_clone_path="$HOME/.cache/elpa-clone"
-elpa_clone_url="https://github.com/dochang/elpa-clone.git"
-email=""
-name=""
+mirror_repo_url=""
 access_login=""
 access_token=""
+commit_name=""
+commit_email=""
+elpa_clone_path="$HOME/.cache/elpa-clone"
+elpa_clone_url="https://github.com/dochang/elpa-clone.git"
 
 PATH=/usr/local/bin:/usr/bin:/bin
 
@@ -18,12 +22,14 @@ function git_config_hook {
   log "Git config hook"
 }
 
-# load configs
+# load configurations
 config_file=$1
 [ -f "$config_file" ] && source "$config_file"
 
-# setup url
-MIRROR_REPO="https://${access_login}:${access_token}@github.com/${owner}/${repo}.git"
+# setup mirror repo URL
+if [ -z "$mirror_repo_url" ]; then
+  mirror_repo_url="https://${access_login}:${access_token}@${mirror_host}/${mirror_owner}/${mirror_repo}.git"
+fi
 
 function log {
   echo "[$(date '+%d/%m/%y %H:%M:%S')]" "$@"
@@ -59,7 +65,7 @@ fi
 
 if [[ ! -d "$mirror_path" ]]; then
   log "cloning mirror repository"
-  git clone --depth 1 "$MIRROR_REPO" "$mirror_path"
+  git clone --depth 1 "$mirror_repo_url" "$mirror_path"
 fi
 
 clone "http://orgmode.org/elpa/" "org"
@@ -72,8 +78,8 @@ clone "rsync://stable.melpa.org/packages/" "stable-melpa"
 
   if [ -d .git ] || git rev-parse --git-dir > /dev/null 2>&1; then
     log "Configure repository"
-    git config user.name "$name"
-    git config user.email "$email"
+    git config user.name "$commit_name"
+    git config user.email "$commit_email"
     git_config_hook
     git add --all
     if [ -z "$(git status --porcelain)" ]; then
@@ -81,8 +87,8 @@ clone "rsync://stable.melpa.org/packages/" "stable-melpa"
     else
       log "Committing and pushing all changes to mirror repository"
       git commit -m "snapshot $(date '+%d/%m/%y %H:%M:%S')"
-      if [[ $"MIRROR_REPO" != "" ]]; then
-        git push "$MIRROR_REPO" "$mirror_repo_branch_name"
+      if [[ $"mirror_repo_url" != "" ]]; then
+        git push "$mirror_repo_url" "$mirror_repo_branch_name"
       fi
     fi
   fi

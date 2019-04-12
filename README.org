@@ -3,9 +3,9 @@
 (To) Mirror Emacs Lisp package archives. Used to create and maintain mirrors
 under Git repository.
 
-Note that currently only GitHub is supported out of box as a remote for the
-mirror. Though you can use =mirror-elpa= to maintain local mirror or mirror on
-any other Git hosting.
+Note that currently only GitLab and GitHub are supported out of box as a remote
+for the mirror. Though you can use =mirror-elpa= to maintain local mirror or
+mirror on any other Git hosting.
 
 ** Prerequisites
 
@@ -20,7 +20,7 @@ The following software must be installed on your system:
 ** Usage
 
 #+BEGIN_SRC bash
-$ git clone https://github.com/d12frosted/mirror-elpa
+$ git clone https://gitlab.com/d12frosted/mirror-elpa
 $ cd mirror-elpa
 $ ./configure
 $ make install
