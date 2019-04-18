@@ -53,7 +53,7 @@ help() {
 ask() {
   local def
   local res
-  def=$(eval echo "\$$1")
+  def="${!1}"
   res=
   while :; do
 		printf "%s: " "$2"
