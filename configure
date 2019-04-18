@@ -62,7 +62,7 @@ ask() {
 		[ -z "$res" ] && res="$def"
 		[ -n "$res" ] && break
   done
-  declare -rg "$1=$res"
+  readonly "$1=$res"
 }
 
 # Declare used variables
