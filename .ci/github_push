@@ -2,10 +2,6 @@
 
 set -ue
 
-GITHUB_REPO_BRANCH="master"
-GITHUB_REPO_REMOTE="github"
 GITHUB_REPO_URL="https://${GITHUB_USER}:${GITHUB_ACCESS_TOKEN}@github.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.git"
 
-git remote add "$GITHUB_REPO_REMOTE" "$GITHUB_REPO_URL" >/dev/null 2>&1
-git fetch "$GITHUB_REPO_REMOTE" >/dev/null 2>&1
-git push -f "$GITHUB_REPO_REMOTE" "HEAD:${GITHUB_REPO_BRANCH}" >/dev/null 2>&1
+git push --mirror "$GITHUB_REPO_URL" >/dev/null 2>&1
