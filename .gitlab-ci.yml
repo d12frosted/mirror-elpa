@@ -17,6 +17,6 @@ build:
 gihub:
   stage: github
   script:
-    - .ci/github_push
+    - git push --mirror "https://${GITHUB_USER}:${GITHUB_ACCESS_TOKEN}@github.com/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}.git" >/dev/null 2>&1
   only:
     - master
