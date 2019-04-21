@@ -9,6 +9,6 @@ stages:
 build:
   stage: build
   script:
-    - ./mirror-elpa .ci/github.config
+    - ./mirror-elpa .ci/gitlab.config
   only:
     - master
