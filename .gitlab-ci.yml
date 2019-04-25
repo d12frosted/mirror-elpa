@@ -10,5 +10,6 @@ build:
   stage: build
   script:
     - ./mirror-elpa .ci/gitlab.config
+  retry: 2
   only:
     - master
