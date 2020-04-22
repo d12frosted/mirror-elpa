@@ -7,7 +7,6 @@ on:
     - '**/*.org'
     branches:
       - master
-  pull_request:
   schedule:
     - cron: '0 4 * * *'
 
