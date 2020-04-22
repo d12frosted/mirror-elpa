@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    paths-ignore:
+    - '**/*.md'
+    - '**/*.org'
+    branches:
+      - master
+  pull_request:
+  schedule:
+    - cron: '0 4 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        emacs_version:
+          - 26.3
+    steps:
+    - uses: purcell/setup-emacs@master
+      with:
+        version: ${{ matrix.emacs_version }}
+
+    - uses: actions/checkout@v1
+
+    - name: sync packages
+      env:
+        ACCESS_LOGIN: ${{ secrets.ACCESS_LOGIN }}
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      run: ./mirror-elpa .ci/github.config
