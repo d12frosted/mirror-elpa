@@ -16,8 +16,6 @@ commit_email=""
 elpa_clone_path="$HOME/.cache/elpa-clone"
 elpa_clone_url="https://github.com/dochang/elpa-clone.git"
 
-PATH=/usr/local/bin:/usr/bin:/bin
-
 function git_config_hook {
   log "Git config hook"
 }
