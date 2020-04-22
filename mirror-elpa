@@ -86,9 +86,9 @@ clone "rsync://stable.melpa.org/packages/" "stable-melpa"
     else
       log "Committing and pushing all changes to mirror repository"
       git commit -m "snapshot $(date '+%d/%m/%y %H:%M:%S')"
-      if [[ "$mirror_url" != "" ]]; then
-        git push "$mirror_url" "$mirror_repo_branch_name"
-      fi
+    fi
+    if [[ "$mirror_url" != "" ]]; then
+      git push "$mirror_url" "$mirror_repo_branch_name"
     fi
   fi
 )
