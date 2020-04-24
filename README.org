@@ -22,9 +22,51 @@ The following software must be installed on your system:
 
 ** Usage
 
+In order to use =mirror-elpa= script, you need to prepare configuration file.
+You can do it manually or use =configure= script provided by this repository.
+Example of configuration file:
+
+#+begin_src bash
+  mirror_path="$XDG_CACHE_HOME/elpa-mirror"
+  mirror_host="github.com"
+  mirror_owner="d12frosted"
+  mirror_repo="elpa-mirror"
+  access_login="$ACCESS_LOGIN"
+  access_token="$ACCESS_TOKEN"
+  commit_name="Golem"
+  commit_email="golem@d12frosted.io"
+  elpa_clone_path="$XDG_CACHE_HOME/elpa-clone"
+
+  function git_config_hook {
+    git config commit.gpgsign false
+  }
+#+end_src
+
+Some explanations:
+
+1. =mirror_path= is location of mirror repository on your disk.
+2. =mirror_host=, =mirror_owner= and =mirror_repo= used to build url to your
+   remote mirror repository. Repository URL is build like this:
+   #+begin_src bash
+     mirror_url="https://${access_login}:${access_token}@${mirror_host}/${mirror_owner}/${mirror_repo}.git"
+   #+end_src
+3. =access_login= is user with access to repository.
+4. =access_token= is password/secret/token that is used for authentication. On
+   GitHub and GitLab you can create access tokens and use them (which is
+   recommended).
+5. =commit_name= and =commit_email= used as committer information.
+6. =elpa_clone_path= is location of =elpa_clone= script for Emacs.
+
+The configuration wizard is not maintained, but you can give it a try, as it
+should help you with token creation.
+
+#+begin_src bash
+  ./configure
+#+end_src
+
+** Using with CRON
+
 #+BEGIN_SRC bash
-$ git clone https://gitlab.com/d12frosted/mirror-elpa
-$ cd mirror-elpa
 $ ./configure
 $ make install
 #+END_SRC
@@ -38,18 +80,6 @@ $ make install SCHEDULE="0 0 * * *" CONFIG_FILE="~/mirror-elpa.sh"
 #+END_SRC
 
 =SCHEDULE= can be set to any valid [[https://en.wikipedia.org/wiki/Cron#CRON_expression][CRON expression]].
-
-Resulting configuration file can be used for more grained control over
-=mirror-elpa= behaviour.
-
-- Set value of =mirror_path= to avoid using temporary folder for mirror.
-- Set value of =mirror_repo_branch_name= to change branch name (default is
-  =master=).
-- Define =git_config_hook= function that is called before changes to repository
-  are committed. This is a good place to configure Git.
-- Set value of =mirror_url= if you wish to use local mirror or mirror hosted
-  somewhere else rather than on GitLab. Empty string means local mirror (script
-  doesn't push).
 
 ** Credits
 
