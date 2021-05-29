@@ -15,6 +15,8 @@ commit_name=""
 commit_email=""
 elpa_clone_path="$HOME/.cache/elpa-clone"
 elpa_clone_url="https://github.com/dochang/elpa-clone.git"
+squash_old_commits=false
+squash_before="1 year"
 
 function git_config_hook {
   log "Git config hook"
@@ -86,6 +88,9 @@ clone "rsync://stable.melpa.org/packages/" "stable-melpa"
     else
       log "Committing and pushing all changes to mirror repository"
       git commit -m "snapshot $(date '+%d/%m/%y %H:%M:%S')"
+    fi
+    if [ "$squash_old_commits" = true ]; then
+      log "squash commits older than $squash_before"
     fi
     if [[ "$mirror_url" != "" ]]; then
       git push "$mirror_url" "$mirror_repo_branch_name"
