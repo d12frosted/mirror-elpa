@@ -71,6 +71,7 @@ fi
 
 clone "http://orgmode.org/elpa/" "org"
 clone "https://elpa.gnu.org/packages/" "gnu"
+clone "https://elpa.nongnu.org/nongnu/" "nongnu"
 clone "rsync://melpa.org/packages/" "melpa"
 clone "rsync://stable.melpa.org/packages/" "stable-melpa"
 
