@@ -19,7 +19,7 @@ jobs:
           - 27.2
         host:
           - github
-          - gitlab
+          # - gitlab
 
     steps:
     - uses: purcell/setup-emacs@master
