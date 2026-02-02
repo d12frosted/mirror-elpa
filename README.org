@@ -1,3 +1,9 @@
+#+begin_html
+<p align="center">
+  <a href="https://github.com/sponsors/d12frosted"><img alt="Sponsor" src="https://img.shields.io/badge/Sponsor-d12frosted-pink?logo=githubsponsors&logoColor=white"/></a>
+</p>
+#+end_html
+
 * =mirror-elpa=
 
 (To) Mirror Emacs Lisp package archives. Used to create and maintain mirrors
@@ -87,3 +93,7 @@ $ make install SCHEDULE="0 0 * * *" CONFIG_FILE="~/mirror-elpa.sh"
 - [[https://github.com/ninrod][Filipe Silva]], thanks for keeping this project alive.
 - [[https://github.com/alyssais][Alyssa Ross]], thanks for [[https://github.com/alyssais/humans][humans]] project that inspired me for improving my
   existing scripts into this project.
+
+* Support
+
+If you enjoy this project, you can support its development via [[https://github.com/sponsors/d12frosted][GitHub Sponsors]] or [[https://www.patreon.com/d12frosted][Patreon]].
