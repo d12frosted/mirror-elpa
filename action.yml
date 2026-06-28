@@ -1,0 +1,130 @@
+name: 'mirror-elpa'
+description: 'Mirror Emacs Lisp package archives (GNU/NonGNU ELPA, MELPA, Org) into a Git repository.'
+author: 'd12frosted'
+branding:
+  icon: 'package'
+  color: 'purple'
+
+inputs:
+  mirror_owner:
+    description: 'Owner of the mirror repository (e.g. d12frosted).'
+    required: true
+  mirror_repo:
+    description: 'Name of the mirror repository (e.g. elpa-mirror).'
+    required: true
+  access_token:
+    description: >-
+      Token used to authenticate the push to the mirror repository. When the
+      workflow lives in the mirror repository itself, the built-in
+      ${{ secrets.GITHUB_TOKEN }} is enough (requires "contents: write").
+    required: true
+  access_login:
+    description: >-
+      Login paired with access_token. Use "x-access-token" together with a
+      GITHUB_TOKEN; for a personal access token any username works.
+    required: false
+    default: 'x-access-token'
+  mirror_host:
+    description: 'Git host of the mirror remote.'
+    required: false
+    default: 'github.com'
+  mirror_repo_branch_name:
+    description: 'Branch of the mirror repository to push to.'
+    required: false
+    default: 'master'
+  commit_name:
+    description: 'Committer name used for snapshot commits.'
+    required: false
+    default: 'mirror-elpa'
+  commit_email:
+    description: 'Committer email used for snapshot commits.'
+    required: false
+    default: 'mirror-elpa@users.noreply.github.com'
+  commit_gpgsign:
+    description: 'Whether to GPG-sign snapshot commits.'
+    required: false
+    default: 'false'
+  mirror_path:
+    description: 'Local working path for the mirror checkout. Defaults to a temporary directory.'
+    required: false
+    default: ''
+  elpa_clone_path:
+    description: 'Local path where the elpa-clone tool is cloned. Defaults to $HOME/.cache/elpa-clone.'
+    required: false
+    default: ''
+  squash_old_commits:
+    description: 'Whether to squash old commits (true/false).'
+    required: false
+    default: 'false'
+  squash_before:
+    description: 'Squash commits older than this human-readable duration (e.g. "1 year").'
+    required: false
+    default: '1 year'
+  emacs_version:
+    description: >-
+      If set, install this Emacs version via purcell/setup-emacs before
+      mirroring. Leave empty to use an Emacs that is already on PATH.
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Emacs
+      if: ${{ inputs.emacs_version != '' }}
+      uses: purcell/setup-emacs@master
+      with:
+        version: ${{ inputs.emacs_version }}
+
+    - name: Mirror ELPA archives
+      shell: bash
+      env:
+        MIRROR_HOST: ${{ inputs.mirror_host }}
+        MIRROR_OWNER: ${{ inputs.mirror_owner }}
+        MIRROR_REPO: ${{ inputs.mirror_repo }}
+        MIRROR_BRANCH: ${{ inputs.mirror_repo_branch_name }}
+        ACCESS_LOGIN: ${{ inputs.access_login }}
+        ACCESS_TOKEN: ${{ inputs.access_token }}
+        COMMIT_NAME: ${{ inputs.commit_name }}
+        COMMIT_EMAIL: ${{ inputs.commit_email }}
+        COMMIT_GPGSIGN: ${{ inputs.commit_gpgsign }}
+        MIRROR_PATH: ${{ inputs.mirror_path }}
+        ELPA_CLONE_PATH: ${{ inputs.elpa_clone_path }}
+        SQUASH_OLD_COMMITS: ${{ inputs.squash_old_commits }}
+        SQUASH_BEFORE: ${{ inputs.squash_before }}
+      run: |
+        set -euo pipefail
+
+        # Build a config file for the mirror-elpa script from the action inputs.
+        # The values are referenced (not interpolated) so secrets and tokens
+        # with special characters never end up in the generated source.
+        cfg="$(mktemp)"
+        trap 'rm -f "$cfg"' EXIT
+
+        cat >"$cfg" <<'CONFIG'
+        mirror_host="${MIRROR_HOST}"
+        mirror_owner="${MIRROR_OWNER}"
+        mirror_repo="${MIRROR_REPO}"
+        mirror_repo_branch_name="${MIRROR_BRANCH}"
+        access_login="${ACCESS_LOGIN}"
+        access_token="${ACCESS_TOKEN}"
+        commit_name="${COMMIT_NAME}"
+        commit_email="${COMMIT_EMAIL}"
+        squash_old_commits="${SQUASH_OLD_COMMITS}"
+        squash_before="${SQUASH_BEFORE}"
+
+        function git_config_hook {
+          git config commit.gpgsign "${COMMIT_GPGSIGN}"
+        }
+        CONFIG
+
+        # Only override these paths when explicitly provided, otherwise let the
+        # script fall back to its own defaults (temp dir / $HOME/.cache).
+        if [ -n "${MIRROR_PATH}" ]; then
+          printf 'mirror_path=%q\n' "${MIRROR_PATH}" >>"$cfg"
+        fi
+        if [ -n "${ELPA_CLONE_PATH}" ]; then
+          printf 'elpa_clone_path=%q\n' "${ELPA_CLONE_PATH}" >>"$cfg"
+        fi
+
+        bash "${GITHUB_ACTION_PATH}/mirror-elpa" "$cfg"
