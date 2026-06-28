@@ -1,0 +1,59 @@
+# Scheduled mirroring workflow for the *mirror* repository.
+#
+# Copy this file into the repository that holds the mirror (e.g.
+# d12frosted/elpa-mirror) at:
+#
+#     .github/workflows/mirror.yaml
+#
+# Running the cron from the mirror repository itself keeps that repository
+# active (every successful run pushes a snapshot commit), so GitHub never
+# auto-disables the scheduled workflow after 60 days of inactivity -- which is
+# what happens when the cron lives in the tooling repository (mirror-elpa).
+#
+# Because the workflow pushes to its own repository, the built-in GITHUB_TOKEN
+# is enough; there is no personal access token to create or rotate. The job
+# must grant "contents: write".
+
+name: mirror
+
+on:
+  schedule:
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Avoid overlapping runs; let an in-progress mirror finish before the next one.
+concurrency:
+  group: mirror
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: d12frosted/mirror-elpa@master
+        with:
+          mirror_owner: d12frosted
+          mirror_repo: elpa-mirror
+          access_login: x-access-token
+          access_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_name: Golem
+          commit_email: golem@d12frosted.io
+          emacs_version: '28.1'
+
+      # --- Mirroring to GitLab as well? -----------------------------------
+      # The same repository can be mirrored elsewhere by adding another step
+      # with a host + token for that remote. GITHUB_TOKEN only works for this
+      # GitHub repository, so GitLab needs its own credentials in secrets:
+      #
+      # - uses: d12frosted/mirror-elpa@master
+      #   with:
+      #     mirror_host: gitlab.com
+      #     mirror_owner: d12frosted
+      #     mirror_repo: elpa-mirror
+      #     access_login: ${{ secrets.GITLAB_USER }}
+      #     access_token: ${{ secrets.GITLAB_ACCESS_TOKEN }}
+      #     commit_name: Golem
+      #     commit_email: golem@d12frosted.io
