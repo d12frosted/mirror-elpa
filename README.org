@@ -70,6 +70,69 @@ should help you with token creation.
   ./configure
 #+end_src
 
+** GitHub Action
+
+=mirror-elpa= ships as a composite GitHub Action, so the mirroring can run on a
+schedule directly from the repository that holds the mirror. Running the cron
+from the mirror repository itself keeps that repository active (every successful
+run pushes a snapshot commit), which prevents GitHub from [[https://docs.github.com/en/actions/using-workflows/disabling-and-enabling-a-workflow#disabling-and-enabling-a-workflow][automatically
+disabling scheduled workflows]] after 60 days of inactivity. Scheduling it from a
+rarely-changing tooling repository instead means the schedule keeps getting
+disabled and has to be re-enabled by hand.
+
+Add a workflow like the following to your mirror repository, for example
+=d12frosted/elpa-mirror= at =.github/workflows/mirror.yaml= (a ready-to-copy
+version lives in [[file:examples/elpa-mirror.yaml][examples/elpa-mirror.yaml]]):
+
+#+begin_src yaml
+  name: mirror
+  on:
+    schedule:
+      - cron: '0 */4 * * *'
+    workflow_dispatch:
+  permissions:
+    contents: write
+  jobs:
+    mirror:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: d12frosted/mirror-elpa@master
+          with:
+            mirror_owner: d12frosted
+            mirror_repo: elpa-mirror
+            access_token: ${{ secrets.GITHUB_TOKEN }}
+            emacs_version: '28.1'
+#+end_src
+
+Because the workflow pushes to its own repository, the built-in =GITHUB_TOKEN=
+is enough -- there is no personal access token to create or rotate. Make sure
+the job grants =contents: write=.
+
+*** Inputs
+
+| Input                     | Required | Default                                | Description                                              |
+|---------------------------+----------+----------------------------------------+----------------------------------------------------------|
+| =mirror_owner=            | yes      |                                        | Owner of the mirror repository.                          |
+| =mirror_repo=             | yes      |                                        | Name of the mirror repository.                           |
+| =access_token=            | yes      |                                        | Token used to authenticate the push.                     |
+| =access_login=            | no       | =x-access-token=                       | Login paired with =access_token=.                        |
+| =mirror_host=             | no       | =github.com=                           | Git host of the mirror remote.                           |
+| =mirror_repo_branch_name= | no       | =master=                               | Branch to push to.                                       |
+| =commit_name=             | no       | =mirror-elpa=                          | Committer name.                                          |
+| =commit_email=            | no       | =mirror-elpa@users.noreply.github.com= | Committer email.                                         |
+| =commit_gpgsign=          | no       | =false=                                | Whether to GPG-sign snapshot commits.                   |
+| =mirror_path=             | no       | temporary directory                    | Local working path for the mirror checkout.             |
+| =elpa_clone_path=         | no       | =$HOME/.cache/elpa-clone=              | Local path for the elpa-clone tool.                     |
+| =squash_old_commits=      | no       | =false=                                | Whether to squash old commits.                          |
+| =squash_before=           | no       | =1 year=                               | Squash commits older than this duration.                |
+| =emacs_version=           | no       |                                        | If set, install this Emacs via =purcell/setup-emacs=.    |
+
+The runner needs =git= and =rsync= available (both are preinstalled on GitHub's
+=ubuntu-latest= images) and an Emacs -- either set =emacs_version= to have the
+action install one, or provide your own beforehand. To mirror to GitLab, set
+=mirror_host: gitlab.com= and pass a GitLab token (with a matching
+=access_login=) via =access_token=.
+
 ** Using with CRON
 
 #+BEGIN_SRC bash
