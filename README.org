@@ -1,5 +1,6 @@
 #+begin_html
 <p align="center">
+  <a href="https://github.com/d12frosted/mirror-elpa/actions/workflows/main.yaml"><img alt="CI" src="https://github.com/d12frosted/mirror-elpa/actions/workflows/main.yaml/badge.svg"/></a>
   <a href="https://github.com/sponsors/d12frosted"><img alt="Sponsor" src="https://img.shields.io/badge/Sponsor-d12frosted-pink?logo=githubsponsors&logoColor=white"/></a>
 </p>
 #+end_html
