@@ -64,7 +64,12 @@ else
   )
 fi
 
-if [[ ! -d "$mirror_path" ]]; then
+# Clone unless mirror_path is already a checkout. Guard on the .git dir rather
+# than the directory itself: when mirror_path is unset we point it at a fresh
+# `mktemp -d`, which already exists (empty), so a plain `-d "$mirror_path"`
+# check would wrongly skip the clone and leave us syncing into a non-repo --
+# elpa-clone then re-downloads everything and nothing can be committed/pushed.
+if [[ ! -d "$mirror_path/.git" ]]; then
   log "cloning mirror repository"
   git clone --depth 1 "$mirror_url" "$mirror_path"
 fi
