@@ -38,8 +38,8 @@ Example of configuration file:
   mirror_repo="elpa-mirror"
   access_login="$ACCESS_LOGIN"
   access_token="$ACCESS_TOKEN"
-  commit_name="Golem"
-  commit_email="golem@d12frosted.io"
+  commit_name="Your Name"
+  commit_email="you@example.com"
   elpa_clone_path="$XDG_CACHE_HOME/elpa-clone"
 
   function git_config_hook {
@@ -116,8 +116,8 @@ the job grants =contents: write=.
 | =access_login=            | no       | =x-access-token=                       | Login paired with =access_token=.                        |
 | =mirror_host=             | no       | =github.com=                           | Git host of the mirror remote.                           |
 | =mirror_repo_branch_name= | no       | =master=                               | Branch to push to.                                       |
-| =commit_name=             | no       | =mirror-elpa=                          | Committer name.                                          |
-| =commit_email=            | no       | =mirror-elpa@users.noreply.github.com= | Committer email.                                         |
+| =commit_name=             | no       | =github-actions[bot]=                  | Committer name.                                          |
+| =commit_email=            | no       | =41898282+github-actions[bot]@users.noreply.github.com= | Committer email.                       |
 | =commit_gpgsign=          | no       | =false=                                | Whether to GPG-sign snapshot commits.                   |
 | =mirror_path=             | no       | temporary directory                    | Local working path for the mirror checkout.             |
 | =elpa_clone_path=         | no       | =$HOME/.cache/elpa-clone=              | Local path for the elpa-clone tool.                     |

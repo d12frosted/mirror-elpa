@@ -35,11 +35,11 @@ inputs:
   commit_name:
     description: 'Committer name used for snapshot commits.'
     required: false
-    default: 'mirror-elpa'
+    default: 'github-actions[bot]'
   commit_email:
     description: 'Committer email used for snapshot commits.'
     required: false
-    default: 'mirror-elpa@users.noreply.github.com'
+    default: '41898282+github-actions[bot]@users.noreply.github.com'
   commit_gpgsign:
     description: 'Whether to GPG-sign snapshot commits.'
     required: false

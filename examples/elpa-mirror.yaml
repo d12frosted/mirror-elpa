@@ -39,9 +39,9 @@ jobs:
           mirror_repo: elpa-mirror
           access_login: x-access-token
           access_token: ${{ secrets.GITHUB_TOKEN }}
-          commit_name: Golem
-          commit_email: golem@d12frosted.io
-          emacs_version: '28.1'
+          emacs_version: '30.2'
+          # committer defaults to github-actions[bot]; override commit_name /
+          # commit_email if you want a different identity.
 
       # --- Mirroring to another remote as well? ---------------------------
       # The same repository can be mirrored elsewhere by adding another step
@@ -56,5 +56,3 @@ jobs:
       #     mirror_repo: elpa-mirror
       #     access_login: ${{ secrets.OTHER_USER }}
       #     access_token: ${{ secrets.OTHER_ACCESS_TOKEN }}
-      #     commit_name: Golem
-      #     commit_email: golem@d12frosted.io
