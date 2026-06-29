@@ -70,6 +70,20 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    # setup-emacs installs Emacs with `nix profile install github:purcell/...`,
+    # and nix resolves that github: reference through api.github.com. Without an
+    # access token nix calls it unauthenticated, which GitHub now throttles with
+    # HTTP 429 ("this endpoint is temporarily being throttled"), failing the
+    # install. nix reads the token from `access-tokens` in NIX_CONFIG (it does
+    # not pick up GITHUB_TOKEN on its own), so feed it the workflow token here.
+    - name: Authenticate nix GitHub API calls
+      if: ${{ inputs.emacs_version != '' }}
+      shell: bash
+      env:
+        GH_API_TOKEN: ${{ github.token }}
+      run: |
+        echo "NIX_CONFIG=access-tokens = github.com=${GH_API_TOKEN}" >>"$GITHUB_ENV"
+
     - name: Set up Emacs
       if: ${{ inputs.emacs_version != '' }}
       uses: purcell/setup-emacs@master
