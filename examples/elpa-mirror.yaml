@@ -43,17 +43,18 @@ jobs:
           commit_email: golem@d12frosted.io
           emacs_version: '28.1'
 
-      # --- Mirroring to GitLab as well? -----------------------------------
+      # --- Mirroring to another remote as well? ---------------------------
       # The same repository can be mirrored elsewhere by adding another step
-      # with a host + token for that remote. GITHUB_TOKEN only works for this
-      # GitHub repository, so GitLab needs its own credentials in secrets:
+      # with that remote's host + token. GITHUB_TOKEN only works for this
+      # GitHub repository, so a different host needs its own credentials in
+      # secrets:
       #
       # - uses: d12frosted/mirror-elpa@master
       #   with:
-      #     mirror_host: gitlab.com
+      #     mirror_host: git.example.com
       #     mirror_owner: d12frosted
       #     mirror_repo: elpa-mirror
-      #     access_login: ${{ secrets.GITLAB_USER }}
-      #     access_token: ${{ secrets.GITLAB_ACCESS_TOKEN }}
+      #     access_login: ${{ secrets.OTHER_USER }}
+      #     access_token: ${{ secrets.OTHER_ACCESS_TOKEN }}
       #     commit_name: Golem
       #     commit_email: golem@d12frosted.io

@@ -12,11 +12,10 @@ under Git repository.
 Available mirrors:
 
 - [[https://github.com/d12frosted/elpa-mirror][elpa-mirror - GitHub]]
-- [[https://gitlab.com/d12frosted/elpa-mirror][elpa-mirror - GitLab]]
 
-Note that currently only GitLab and GitHub are supported out of box as a remote
-for the mirror. Though you can use =mirror-elpa= to maintain local mirror or
-mirror on any other Git hosting. See ~Usage~ section for more information.
+Note that GitHub is supported out of box as a remote for the mirror. Though you
+can use =mirror-elpa= to maintain a local mirror or mirror on any other Git
+hosting. See ~Usage~ section for more information.
 
 ** Prerequisites
 
@@ -58,8 +57,7 @@ Some explanations:
    #+end_src
 3. =access_login= is user with access to repository.
 4. =access_token= is password/secret/token that is used for authentication. On
-   GitHub and GitLab you can create access tokens and use them (which is
-   recommended).
+   GitHub you can create access tokens and use them (which is recommended).
 5. =commit_name= and =commit_email= used as committer information.
 6. =elpa_clone_path= is location of =elpa_clone= script for Emacs.
 
@@ -129,8 +127,8 @@ the job grants =contents: write=.
 
 The runner needs =git= and =rsync= available (both are preinstalled on GitHub's
 =ubuntu-latest= images) and an Emacs -- either set =emacs_version= to have the
-action install one, or provide your own beforehand. To mirror to GitLab, set
-=mirror_host: gitlab.com= and pass a GitLab token (with a matching
+action install one, or provide your own beforehand. To mirror to another host,
+set =mirror_host= accordingly and pass a token for that host (with a matching
 =access_login=) via =access_token=.
 
 ** Using with CRON
