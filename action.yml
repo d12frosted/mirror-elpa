@@ -70,25 +70,13 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    # setup-emacs installs Emacs with `nix profile install github:purcell/...`,
-    # and nix resolves that github: reference through api.github.com. Called
-    # unauthenticated, GitHub throttles it with HTTP 429 ("this endpoint is
-    # temporarily being throttled") and the install fails before any mirroring
-    # runs. Install nix ourselves first with the workflow token written into the
-    # *system* nix.conf, which the nix daemon honours -- a token supplied via the
-    # client environment (NIX_CONFIG) is ignored for an untrusted runner user.
-    # setup-emacs reuses this nix instead of reinstalling, so its github: fetch
-    # is authenticated and no longer rate-limited.
-    - name: Install Nix with authenticated GitHub access
-      if: ${{ inputs.emacs_version != '' }}
-      uses: cachix/install-nix-action@v30
-      with:
-        extra_nix_config: |
-          access-tokens = github.com=${{ github.token }}
-
+    # Install Emacs via d12frosted/setup-emacs, which avoids the rate-limited
+    # api.github.com call that makes purcell/setup-emacs flaky on GitHub-hosted
+    # runners (HTTP 429 "temporarily being throttled"). See that action's README
+    # for the full story.
     - name: Set up Emacs
       if: ${{ inputs.emacs_version != '' }}
-      uses: purcell/setup-emacs@master
+      uses: d12frosted/setup-emacs@v1
       with:
         version: ${{ inputs.emacs_version }}
 
