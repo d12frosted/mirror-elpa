@@ -15,8 +15,8 @@ inputs:
   access_token:
     description: >-
       Token used to authenticate the push to the mirror repository. When the
-      workflow lives in the mirror repository itself, the built-in
-      ${{ secrets.GITHUB_TOKEN }} is enough (requires "contents: write").
+      workflow lives in the mirror repository itself, the built-in GITHUB_TOKEN
+      (secrets.GITHUB_TOKEN) is enough (requires "contents: write").
     required: true
   access_login:
     description: >-
