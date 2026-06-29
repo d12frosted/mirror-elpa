@@ -17,6 +17,12 @@ Note that GitHub is supported out of box as a remote for the mirror. Though you
 can use =mirror-elpa= to maintain a local mirror or mirror on any other Git
 hosting. See ~Usage~ section for more information.
 
+The following archives are mirrored:
+
+- [[https://elpa.gnu.org/packages/][GNU ELPA]] and [[https://elpa.gnu.org/devel/][GNU-devel ELPA]]
+- [[https://elpa.nongnu.org/nongnu/][NonGNU ELPA]] and [[https://elpa.nongnu.org/nongnu-devel/][NonGNU-devel ELPA]]
+- [[https://melpa.org/][MELPA]] and [[https://stable.melpa.org/][MELPA Stable]]
+
 ** Prerequisites
 
 The following software must be installed on your system:
@@ -99,7 +105,7 @@ version lives in [[file:examples/elpa-mirror.yaml][examples/elpa-mirror.yaml]]):
             mirror_owner: d12frosted
             mirror_repo: elpa-mirror
             access_token: ${{ secrets.GITHUB_TOKEN }}
-            emacs_version: '28.1'
+            emacs_version: '30.2'
 #+end_src
 
 Because the workflow pushes to its own repository, the built-in =GITHUB_TOKEN=
@@ -123,13 +129,15 @@ the job grants =contents: write=.
 | =elpa_clone_path=         | no       | =$HOME/.cache/elpa-clone=              | Local path for the elpa-clone tool.                     |
 | =squash_old_commits=      | no       | =false=                                | Whether to squash old commits.                          |
 | =squash_before=           | no       | =1 year=                               | Squash commits older than this duration.                |
-| =emacs_version=           | no       |                                        | If set, install this Emacs via =purcell/setup-emacs=.    |
+| =emacs_version=           | no       |                                        | If set, install this Emacs via =d12frosted/setup-emacs=. |
 
 The runner needs =git= and =rsync= available (both are preinstalled on GitHub's
 =ubuntu-latest= images) and an Emacs -- either set =emacs_version= to have the
-action install one, or provide your own beforehand. To mirror to another host,
-set =mirror_host= accordingly and pass a token for that host (with a matching
-=access_login=) via =access_token=.
+action install one (via [[https://github.com/d12frosted/setup-emacs][=d12frosted/setup-emacs=]], which avoids the GitHub API
+rate limits that make other setups flaky), or provide your own beforehand. Use a
+stable Emacs version (e.g. =30.2=); =elpa-clone= can fail on dev/snapshot builds.
+To mirror to another host, set =mirror_host= accordingly and pass a token for
+that host (with a matching =access_login=) via =access_token=.
 
 ** Using with CRON
 
